@@ -11,7 +11,9 @@ class DbConfig(BaseSettings):
         extra="ignore"
     )
 
-    DB_URL: str
+    APP_DB_URL: str
+
+    MIGRATION_DB_URL: str
 
 
 config = DbConfig()

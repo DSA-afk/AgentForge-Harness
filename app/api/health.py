@@ -13,7 +13,6 @@ async def health_check():
 
 @router.get("/db")
 async def db_check(session:AsyncSession = Depends(get_db)):
-
-    result = await session.execute(text("SELECT 1"))
+    result = await session.execute(text("SELECT * from document"))
 
     return {"result":result.scalar()}
