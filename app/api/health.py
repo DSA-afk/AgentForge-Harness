@@ -1,4 +1,4 @@
-from fastapi import APIRouter,Depends
+from fastapi import APIRouter, Depends
 from ..database.session import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
@@ -11,8 +11,8 @@ async def health_check():
     return {"status": "ok"}
 
 
-@router.get("/db")
-async def db_check(session:AsyncSession = Depends(get_db)):
-    result = await session.execute(text("SELECT * from document"))
+@router.get("/document")
+async def db_document(session: AsyncSession = Depends(get_db)):
+    result = (await session.execute(text("SELECT * from document"))).mappings().all()
 
-    return {"result":result.scalar()}
+    return {"result": [dict(r) for r in result]}

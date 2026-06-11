@@ -24,6 +24,8 @@ target_metadata = Base.metadata
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 config.set_main_option("sqlalchemy.url", db_config.MIGRATION_DB_URL)
+
+
 # ... etc.
 
 
