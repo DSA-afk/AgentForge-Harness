@@ -16,7 +16,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-from app.database.config import config as db_config
+from app.config.config import settings as db_config
 from app.database.base import Base
 
 target_metadata = Base.metadata
