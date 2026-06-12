@@ -246,6 +246,18 @@ streamlit   前端（撑场面）
 - **Agent 落地**：要能徒手画出第三节那张图结构，并讲清 router 怎么决策、RAG 子链怎么走。
 - 简历技术栈可以列全，但心里分清：哪些"能被问深"（核心层 + 3 护城河 + Agent 编排），哪些"用过但点到为止"（加分层）。
 
+### 护城河① 多租户隔离 —— 标准答法
+
+被问"你多租户怎么做隔离的"，按这段讲（一口气串起 RLS、最小权限、连接池、fail-closed 四个点）：
+
+> 多租户隔离我做了**数据库层强制 + 应用层上下文**两件事。每张租户表带 `tenant_id` 并开启 RLS（行级安全），策略按会话变量 `app.current_tenant` 过滤。应用用**最小权限角色**连库（不是表的 owner，避免 owner/superuser 绕过 RLS），迁移才用高权限角色——**职责分离**。每个请求在事务内用 `set_config('app.current_tenant', tid, is_local=true)` 设当前租户；**因为连接池会复用连接，必须用事务级（SET LOCAL / is_local=true）而不能用普通 SET，否则租户变量会残留到下一个请求、串数据**。没有租户身份时 `current_setting(..., true)` 返回 NULL，RLS 匹配不到任何行、返回空——**fail-closed，宁可什么都看不到也不漏**。RLS 策略全部写进 Alembic 迁移，可复现可回滚。最后用自动化对抗性测试证明"租户 A 永远读不到 B"。
+
+**预判的连环追问：**
+- *为什么不在应用层加 `WHERE tenant_id` 就行？* → 靠每个开发每次都不忘 WHERE 太脆弱，一处遗漏即泄露；RLS 在数据库层兜底，纵深防御。
+- *为什么 document 也要直接挂 tenant_id，不通过 user 间接关联？* → RLS 按列过滤要简单高效，每张表直接带 tenant_id 才能写出 `WHERE tenant_id = 当前租户` 这种一列搞定的策略，否则每行都要 JOIN。
+- *"我开了 RLS 却不生效"怎么回事？* → 多半是用表 owner 或 superuser 连的，它们默认绕过 RLS；要用非 owner 的最小权限角色，或 `FORCE ROW LEVEL SECURITY`。
+- *连接池下为什么会串租户？* → 普通 SET 留在物理连接上，连接被复用给别的租户请求时残留；用 `SET LOCAL`/`is_local=true` 绑定到事务，事务结束自动失效。
+
 ---
 
 ## 附：建议的 Day 1 起步路径
