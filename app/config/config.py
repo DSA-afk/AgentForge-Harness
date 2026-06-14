@@ -17,5 +17,8 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15  # 自动转 int，不用手动 int()
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
+    # Qdrant
+    EMBEDDING_MODEL_PATH: str
+
 
 settings = Settings()
