@@ -38,7 +38,39 @@
 - [ ] 注册"加入已有租户"时需捕获 `IntegrityError` → 409（当前每次新建租户，暂不触发）
 - [ ] 登录用 tenant_id（UUID）——已知 UX 问题，生产用子域名/slug 解析，当前由客户端携带（见对话决策"保持 A"）
 
+## 护城河② 混合检索 + 重排 —— ✅ 检索核心完成
+
+- [x] Qdrant 集合：dense(1024,Cosine) + sparse 命名向量 + tenant_id payload 索引
+- [x] embedding 模块：bge-m3 一次出 dense+sparse，转成 Qdrant 格式（dense→list，sparse→indices/values）
+- [x] upsert：块 embed 后写入，带 tenant_id payload
+- [x] hybrid_search：dense+sparse 双路 prefetch → RRF 融合 → tenant_id query_filter（租户隔离）
+- [x] rerank：cross-encoder（bge-reranker-v2-m3，用 transformers 直接实现，绕开 FlagEmbedding 与 transformers 5.x 的 `prepare_for_model` 冲突）→ 召回50→精排5
+- [x] 实测：语义检索、关键词(缩写)检索、租户隔离、rerank 纠正粗排 全部验证
+
+### 护城河②遗留项
+
+- [ ] **GPU**：torch 现为 CPU 版（`2.12.0+cpu`），有 RTX 3060 未用上。批量灌文档前换 CUDA torch 提速
+- [ ] 文档处理流水线（上传→解析→切块→embed→upsert）：目前是手写测试块，未接真实文档
+- [ ] embedding/reranker 是模块级单例（import 即加载，几十秒）；接进 FastAPI 时注意启动成本（考虑 lifespan 预加载）
+- [ ] reranker 用 transformers 直接实现，未做批处理；候选量大时需自己分批
+
+## 文档处理流水线 —— 🟡 同步版完成
+
+- [x] 解析：PyMuPDF(PDF) + python-docx(Word)，从 bytes 解析（fitz stream / BytesIO），按文件头魔数分发
+- [x] 切块：char-based 固定窗口 + overlap（基线，接口稳定，后续可换 token/结构感知）
+- [x] 存储：MinIO 存原文件（key 前缀 tenant_id，应用层隔离）+ PG document 表记元数据
+- [x] 上传接口 `POST /documents`（protected，租户/用户取自 token）→ 存储 → 解析切块 embed → 入 Qdrant
+- [x] 端到端验证：上传 PDF → 自动入库 → hybrid_search 检索得到
+
+### 流水线遗留项
+
+- [ ] **异步化（Celery + Redis）**：当前同步——上传请求会阻塞到 embedding 完成。大文件需放后台队列（step C）
+- [ ] 启动加载 bge-m3（document→ingest→embedding 链）使 `uvicorn` 启动慢——用 FastAPI lifespan 预加载/管理
+- [ ] 文档状态字段（pending/processing/done/failed）+ 查询进度接口（异步化后需要）
+- [ ] 切块升级（token/结构感知）——等能测量检索质量后再做，避免过早优化
+
 ## 下一步候选
 
-- 认证收尾：2.5 refresh 接口 + `get_tenant_db` DRY 重构
-- 或进入护城河②（混合检索 + 重排）/ 护城河③（Redis 分布式锁与限流）
+- 流水线异步化（Celery + Redis，step C）—— 顺带立起 Redis（护城河③也要用）
+- Agent 主干（LangGraph：router→retrieve→rerank→generate）—— 项目灵魂，需 LLM
+- 护城河③（Redis 分布式锁与限流）

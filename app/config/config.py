@@ -19,6 +19,12 @@ class Settings(BaseSettings):
 
     # Qdrant
     EMBEDDING_MODEL_PATH: str
+    RERANKER_MODEL_PATH: str
+
+    # minio
+    MINIO_ENDPOINT: str
+    MINIO_ACCESS_KEY: str
+    MINIO_SECRET_KEY: str
 
 
 settings = Settings()

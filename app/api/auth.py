@@ -1,16 +1,12 @@
-from sqlite3 import IntegrityError
-
-from fastapi import APIRouter, Depends
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 import uuid
+from sqlalchemy.exc import IntegrityError
+from fastapi import APIRouter, Depends,HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.config.schema import RegisterRequest, LoginRequest
 from app.database.session import AsyncSessionLocal
 from sqlalchemy import text
-from app.auth.security import hash_password
-from fastapi import HTTPException
-from app.auth.security import verify_password
-from app.auth.jwt import create_access_token, create_refresh_token
-from app.auth.jwt import decode_token
+from app.auth.security import hash_password,verify_password
+from app.auth.jwt import create_access_token, create_refresh_token,decode_token
 
 auth_router = APIRouter(prefix="/auth")
 security = HTTPBearer()

@@ -14,10 +14,11 @@ from qdrant_client.http.exceptions import UnexpectedResponse
 
 class QdrantStore:
 
-    def __init__(self):
+    def __init__(self, collection_name: str = "documents"):
         self.collection_name = None
         try:
             self.client = QdrantClient(host="localhost", port=6333)
+            self.create_collection(collection_name)
         except Exception as e:
             raise ConnectionError(f"无法连接到 Qdrant 服务: {e}") from e
 
@@ -100,18 +101,18 @@ class QdrantStore:
     def hybrid_search(self, query_text: str, tenant_id: str, limit: int = 50):
         q_vector = embed_texts([query_text])[0]
         prefetch = [
-                Prefetch(query=q_vector['dense'], using='dense', limit=limit),
-                Prefetch(
-                    query=SparseVector(
-                        indices=q_vector['sparse']['indices'],
-                        values=q_vector['sparse']['values']),
-                    using='sparse',
-                    limit=limit
-                )
-            ]
+            Prefetch(query=q_vector['dense'], using='dense', limit=limit),
+            Prefetch(
+                query=SparseVector(
+                    indices=q_vector['sparse']['indices'],
+                    values=q_vector['sparse']['values']),
+                using='sparse',
+                limit=limit
+            )
+        ]
         q_fusion = FusionQuery(fusion=Fusion.RRF)
         q_filter = Filter(
-            must=[FieldCondition(key="tenant_id",match=MatchValue(value=tenant_id))]
+            must=[FieldCondition(key="tenant_id", match=MatchValue(value=tenant_id))]
         )
 
         resp = self.client.query_points(
@@ -137,7 +138,4 @@ class QdrantStore:
         return collection_info
 
 
-if __name__ == '__main__':
-    qdrant_client = QdrantStore()
-    qdrant_client.create_collection("documents", recreate_if_exists=True)
-    qdrant_client.get_collection("documents")
+qdrant_store = QdrantStore()
