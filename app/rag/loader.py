@@ -33,6 +33,8 @@ def parse(data: bytes) -> str:
                 # DOCX 必须包含 word/document.xml
                 if 'word/document.xml' in zf.namelist():
                     return parse_docx(data)
+                else:
+                    raise ValueError("未知的文件格式")
         except zipfile.BadZipFile:
             raise ValueError("未知的文件格式")
     else:

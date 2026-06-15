@@ -69,6 +69,20 @@
 - [ ] 文档状态字段（pending/processing/done/failed）+ 查询进度接口（异步化后需要）
 - [ ] 切块升级（token/结构感知）——等能测量检索质量后再做，避免过早优化
 
+## Agent 主干（LangGraph）—— 🟡 基础 RAG 链完成
+
+- [x] 模型层 `app/agent/llm.py`：OpenAI 兼容协议，base_url/key/model 走 .env，本地 Ollama↔云端可切（已验证云端）
+- [x] 最小 LangGraph：State + generate 节点 + 编译跑通
+- [x] RAG 链：retrieve(混合检索) → rerank(精排) → generate(拼来源 prompt + 防幻觉) → END
+- [x] 端到端验证：库内问题基于文档作答并标来源；库外问题拒答"无法回答"
+
+### Agent 遗留项
+
+- [ ] router 节点 + 条件边：判断 走检索(rag) 还是 直接答(direct)（step 4）
+- [x] 暴露为 HTTP 接口 `POST /chat`（protected，租户取自 token，`run_in_threadpool` 甩开阻塞不堵事件循环，返回答案+来源）
+- [ ] 高级特性：Streaming（SSE 流式）、Checkpointer（多轮/持久化）、工具调用、grade 自检
+- [ ] LLM 调用的错误处理 / 超时 / 重试
+
 ## 下一步候选
 
 - 流水线异步化（Celery + Redis，step C）—— 顺带立起 Redis（护城河③也要用）

@@ -5,8 +5,8 @@ from app.rag.qdrant_store import qdrant_store
 
 
 def process_document(data: bytes, document: dict):
-    test = parse(data)
-    chunks_text = chunk_text(test)
+    text = parse(data)
+    chunks_text = chunk_text(text)
     vecs = embed_texts(chunks_text)
     chunks = [
         {
