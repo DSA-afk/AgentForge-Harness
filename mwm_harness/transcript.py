@@ -108,9 +108,11 @@ def load_messages(path: Path) -> list[Message]:
             entry = json.loads(raw)
         except json.JSONDecodeError:
             continue
-        if entry.get("type") not in ("user", "assistant"):
+        if not isinstance(entry, dict) or entry.get("type") not in ("user", "assistant"):
             continue
-        body = entry.get("message") or {}
+        body = entry.get("message")
+        if not isinstance(body, dict):
+            continue
         content = body.get("content")
         if not isinstance(content, (str, list)):
             continue
