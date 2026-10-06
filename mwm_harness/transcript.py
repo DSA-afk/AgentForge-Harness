@@ -147,7 +147,10 @@ def repair_history(messages: list[Message]) -> list[Message]:
             {
                 "type": "tool_result",
                 "tool_use_id": b["id"],
-                "content": "Interrupted before this tool ran.",
+                "content": (
+                    "Interrupted before a tool result was recorded; execution outcome is unknown. "
+                    "Verify existing state and side effects before retrying this operation."
+                ),
                 "is_error": True,
             }
             for b in missing

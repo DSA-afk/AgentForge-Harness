@@ -27,6 +27,19 @@ class TranscriptRecoveryTests(unittest.TestCase):
         ], tail='{"type":')
         self.assertEqual([message.text() for message in messages], ["still recoverable"])
 
+    def test_missing_result_does_not_claim_a_side_effect_never_happened(self):
+        messages = self.read_entries([
+            {"type": "assistant", "message": {"content": [
+                {"type": "tool_use", "id": "write-1", "name": "Write",
+                 "input": {"file_path": "report.txt", "content": "done"}}
+            ]}}
+        ])
+        result = messages[1].blocks()[0]
+        self.assertEqual(result["tool_use_id"], "write-1")
+        self.assertTrue(result["is_error"])
+        self.assertIn("execution outcome is unknown", result["content"])
+        self.assertIn("Verify", result["content"])
+        self.assertNotIn("before this tool ran", result["content"])
 
     def test_recorded_results_are_preserved(self):
         result = {"type": "tool_result", "tool_use_id": "read-1", "content": "known"}
