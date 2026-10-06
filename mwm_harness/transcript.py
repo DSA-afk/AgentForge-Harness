@@ -97,29 +97,30 @@ def usage_to_anthropic(usage: dict[str, Any] | None) -> dict[str, int]:
 def load_messages(path: Path) -> list[Message]:
     """Rebuild the model-visible history from a transcript file.
 
-    Lines that do not parse are skipped: a session killed mid-write leaves a
-    torn last line, and that must not make the session unresumable.
+    Invalid records are skipped: a session killed mid-write can leave a torn
+    last line. Read incrementally to avoid a second full copy of long logs.
     """
     messages: list[Message] = []
-    for raw in path.read_text(encoding="utf-8", errors="replace").splitlines():
-        if not raw.strip():
-            continue
-        try:
-            entry = json.loads(raw)
-        except json.JSONDecodeError:
-            continue
-        if not isinstance(entry, dict) or entry.get("type") not in ("user", "assistant"):
-            continue
-        body = entry.get("message")
-        if not isinstance(body, dict):
-            continue
-        content = body.get("content")
-        if not isinstance(content, (str, list)):
-            continue
-        if entry.get("isCompactSummary"):
-            messages = []  # everything before a compaction was replaced by its summary
-        extra = {k: v for k, v in body.items() if k not in ("role", "content")}
-        messages.append(Message(entry["type"], content, bool(entry.get("isMeta")), extra))
+    with path.open(encoding="utf-8", errors="replace") as handle:
+        for raw in handle:
+            if not raw.strip():
+                continue
+            try:
+                entry = json.loads(raw)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(entry, dict) or entry.get("type") not in ("user", "assistant"):
+                continue
+            body = entry.get("message")
+            if not isinstance(body, dict):
+                continue
+            content = body.get("content")
+            if not isinstance(content, (str, list)):
+                continue
+            if entry.get("isCompactSummary"):
+                messages = []  # everything before a compaction was replaced by its summary
+            extra = {k: v for k, v in body.items() if k not in ("role", "content")}
+            messages.append(Message(entry["type"], content, bool(entry.get("isMeta")), extra))
     return repair_history(messages)
 
 
