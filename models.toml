@@ -1,0 +1,88 @@
+# Model registry for MWM Harness. One entry per model id.
+# key_env names the environment variable that holds the API key; the key itself
+# lives in ~/.config/mwm-harness/secrets.env (mode 600), never in this repo.
+# Quirk flags stay "unverified" until spike/spike_toolcalls.py has measured them
+# and COMPAT.md records the result.
+
+[defaults]
+base_url = "https://token-plan.ap-southeast-1.maas.aliyuncs.com/compatible-mode/v1"
+key_env = "MWM_HARNESS_API_KEY"
+
+[models."qwen3.8-max"]
+family = "qwen"
+context_window = 1000000
+soft_budget = 200000
+thinking_field = "enable_thinking"
+
+[models."kimi-k2.7-code"]
+family = "kimi"
+soft_budget = 200000
+
+[models."glm-5.2"]
+family = "glm"
+soft_budget = 200000
+
+# Local models behind Ollama's OpenAI-compatible endpoint. Ollama ignores the
+# key, but key_env must hold any non-empty value (OLLAMA_API_KEY=ollama).
+# The endpoint cannot take num_ctx per request and Ollama cuts a longer prompt
+# SILENTLY at the model's context length (4096 by default; measured 09-20: a
+# 7k-token prompt came back as 2050 input tokens). So these ids are 16k
+# variants built once with:
+#   printf 'FROM qwen3-vl:4b-instruct\nPARAMETER num_ctx 16384\n' > Modelfile
+#   ollama create qwen3-vl-4b-instruct-16k -f Modelfile
+# Both base models passed the parallel tool-call spike, see COMPAT.md.
+[models."qwen3-vl-4b-instruct-16k"]
+family = "qwen"
+base_url = "http://localhost:11434/v1"
+key_env = "OLLAMA_API_KEY"
+context_window = 16384
+soft_budget = 12000
+
+[models."gemma4-e4b-16k"]
+family = "gemma"
+base_url = "http://localhost:11434/v1"
+key_env = "OLLAMA_API_KEY"
+context_window = 16384
+soft_budget = 12000
+
+# Ornith-1.5-35B-A3B (DeepReinforce, MIT, Qwen 3.5 MoE base, 3B active per token),
+# official Q4_K_M GGUF from ornith-ai/Ornith-1.5-35B-A3B-GGUF, 16k variant built with:
+#   printf 'FROM hf.co/ornith-ai/Ornith-1.5-35B-A3B-GGUF:Q4_K_M\nPARAMETER num_ctx 16384\n' > Modelfile
+#   ollama create ornith-1.5-35b-16k -f Modelfile
+# 21.7 GB, so most layers sit in system RAM on the 6 GB laptop GPU.
+[models."ornith-1.5-35b-16k"]
+family = "qwen"
+base_url = "http://localhost:11434/v1"
+key_env = "OLLAMA_API_KEY"
+context_window = 16384
+soft_budget = 12000
+
+# Spark-X2.5-4B (iFLYTEK SparkLLM, Apache 2.0, 4.1B dense, hybrid sliding-window
+# attention), official Q4_K_M GGUF from XHToken/Spark-X2.5-4B-GGUF, 16k variant built with:
+#   printf 'FROM hf.co/XHToken/Spark-X2.5-4B-GGUF:Q4_K_M\nPARAMETER num_ctx 16384\n' > Modelfile
+#   ollama create spark-x2.5-4b-16k -f Modelfile
+[models."spark-x2.5-4b-16k"]
+family = "spark"
+base_url = "http://localhost:11434/v1"
+key_env = "OLLAMA_API_KEY"
+context_window = 16384
+soft_budget = 12000
+
+# 32k variants of the two models above (both GGUFs support far more: Ornith 262,144,
+# Spark 1,048,576). The harness's own system prompt and tool list are about 17,000
+# tokens before the first message, so the 16k variants cannot hold a session.
+#   printf 'FROM <same GGUF as the 16k variant>\nPARAMETER num_ctx 32768\n' > Modelfile
+#   ollama create <name>-32k -f Modelfile
+[models."ornith-1.5-35b-32k"]
+family = "qwen"
+base_url = "http://localhost:11434/v1"
+key_env = "OLLAMA_API_KEY"
+context_window = 32768
+soft_budget = 26000
+
+[models."spark-x2.5-4b-32k"]
+family = "spark"
+base_url = "http://localhost:11434/v1"
+key_env = "OLLAMA_API_KEY"
+context_window = 32768
+soft_budget = 26000

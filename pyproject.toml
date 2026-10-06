@@ -1,33 +1,32 @@
+[build-system]
+requires = ["setuptools>=77.0"]
+build-backend = "setuptools.build_meta"
+
 [project]
-name = "total-rag"
+name = "mwm-harness"
 version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.14"
+description = "MWM Harness: a personal agent harness for Qwen, Kimi and GLM models"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE"]
 dependencies = [
-    "alembic>=1.18.4",
-    "asyncpg>=0.31.0",
-    "bcrypt>=5.0.0",
-    "fastapi>=0.136.3",
-    "flagembedding>=1.4.0",
-    "langchain-core>=1.4.7",
-    "langgraph>=1.2.5",
-    "minio>=7.2.20",
-    "openai>=2.41.1",
-    "pydantic-settings>=2.14.1",
-    "pymupdf>=1.27.2.3",
-    "python-docx>=1.2.0",
-    "python-jose[cryptography]>=3.5.0",
-    "python-multipart>=0.0.32",
-    "qdrant-client>=1.18.0",
-    "sqlalchemy[asyncio]>=2.0.50",
-    "uvicorn[standard]>=0.49.0",
+    "httpx>=0.27",
 ]
 
-[dependency-groups]
-dev = [
-    "httpx>=0.28.1",
-    "pytest>=9.0.3",
-    "pytest-asyncio>=1.4.0",
-    "pytest-cov>=7.1.0",
-]
+[project.scripts]
+mwm = "mwm_harness.cli:main"
+mwm-jev = "mwm_harness.jev:main"
+mwm-eval = "mwm_harness.reason_eval:main"
+
+[project.optional-dependencies]
+web = ["fastapi>=0.110", "uvicorn>=0.29", "websockets>=12"]
+dev = ["pytest>=8.0", "ruff>=0.15", "fastapi>=0.110", "uvicorn>=0.29", "websockets>=12"]
+
+[tool.setuptools.packages.find]
+include = ["mwm_harness*"]
+
+[tool.setuptools.package-data]
+mwm_harness = ["web/static/*", "playbooks/*/SKILL.md", "builtin_agents/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
