@@ -1,0 +1,77 @@
+# COMPAT: measured model behaviour on the shared endpoint
+
+Written by `spike/spike_toolcalls.py` on 2026-09-20 09:52 UTC. Endpoint: `http://localhost:11434/v1`.
+Every value below is measured, none is assumed. Raw chunks: `spike/out/`.
+
+| model | 2 parallel tool calls | arguments valid JSON | sent reasoning text | finish_reason | prompt / completion tokens | cached tokens on repeat | note |
+|---|---|---|---|---|---|---|---|
+| qwen3-vl:4b-instruct | yes | yes | no | tool_calls | 236 / 44 | 235 | 5.2s for 2 requests |
+| qwen3-vl:4b | yes | yes | yes | tool_calls | 238 / 213 | 237 | 11.3s for 2 requests |
+| gemma4:e4b | yes | yes | no | tool_calls | 138 / 33 | 133 | 23.5s for 2 requests |
+| qwen3-vl:8b | yes | yes | yes | tool_calls | 238 / 263 | 237 | 65.5s for 2 requests |
+| ornith-1.5-35b-16k | yes | yes | yes | tool_calls | 357 / 85 | 0 | 114.6s for 2 requests (2026-10-04, includes a model load) |
+| spark-x2.5-4b-16k | yes | yes | yes | tool_calls | 166 / 75 | 161 | 2.1s for 2 requests (2026-10-05, Ollama 0.34.4) |
+
+## 2026-10-04: Ornith-1.5-35B-A3B vs qwen3-vl-4b-instruct-16k on two bug-fix tasks
+
+Ornith = official `ornith-ai/Ornith-1.5-35B-A3B-GGUF` Q4_K_M (21.7 GB) as the 16k
+variant `ornith-1.5-35b-16k`. Ollama 0.34.0 put the expert weights in system RAM
+and 41 shared layers (~2 GB) on the 6 GB RTX 3060 laptop GPU. Warm speed on a
+347-token answer: 18.8 tokens/s generated. The first spike attempt timed out at
+the script's 120 s limit during the cold load.
+
+Each run: headless `mwm -p`, `--no-mcp --no-hooks --mode bypassPermissions`,
+fresh copy of the task, 900 s cap. Task a = `parse.py` crashes on "1,234.50";
+task b = `median()` wrong for even-length lists, 2 failing pytest tests, tests
+must stay untouched. Pass = the program/test result, checked by script.
+
+| model | task a pass | task b pass | requests per pass | seconds per pass |
+|---|---|---|---|---|
+| qwen3-vl-4b-instruct-16k | 2/3 | 1/3 | 5-6 | 209-348 |
+| ornith-1.5-35b-16k | 3/3 | 2/3 | 4-6 | 465-806 |
+
+- 4B failures: a-2 replaced "," with "." (still crashes), then the repeat brake
+  ended the turn; b-2 still working after 11 requests at 900 s; b-3 hung on
+  its first request for 900 s.
+- Ornith failure b-3: its first Read calls used an invented path
+  (a home-folder project path that does not exist) instead of the
+  working directory, then it tried an Edit built from an imagined file body;
+  it found the real file but each request took 100-170 s, so 7 requests hit
+  the 900 s cap.
+- Timing is contaminated: a video-intelligence ingest shared Ollama during all
+  4B runs, and Ollama's 1-minute keep-alive reloaded Ornith from disk at the
+  start of most runs. Pass counts and request counts are not affected.
+- n = 3 per cell: 5/6 vs 3/6 overall is a direction, not a significant gap.
+
+### 2026-10-05 clean rerun (nothing else on Ollama, model preloaded before the runs)
+
+| model | task a | task b | steps (requests) | seconds per step |
+|---|---|---|---|---|
+| qwen3-vl-4b-instruct-16k | PASS 177 s | PASS 181 s | 4 / 5 | 13-70 |
+| ornith-1.5-35b-16k | PASS 109 s | PASS 115 s | 5 / 4 | first 68-70, then 6-26 |
+
+Loaded placement: Ornith 22 GB, 84% CPU / 16% GPU; the 4B at 16k spills 38% to CPU.
+Ornith's first request pays for the ~12k-token harness prompt; later requests
+reuse the prompt cache. The 100-170 s per step measured on 2026-10-04 came from
+the shared Ollama (video ingest, 1-minute keep-alive reloads), not from the model.
+n = 1 per cell in this rerun.
+
+## 2026-10-05: Spark-X2.5-4B on the same two bug-fix tasks
+
+Spark = official `XHToken/Spark-X2.5-4B-GGUF` Q4_K_M (iFLYTEK SparkLLM, Apache 2.0,
+4.1B dense) as the 16k variant `spark-x2.5-4b-16k`. Its `spark2_5` architecture
+needs Ollama 0.34.1 or later, so Ollama went from 0.34.0 to 0.34.4 (old copy kept
+at `~/.local/opt/ollama-0.34.0-backup`). Loaded: 2.8 GB, 100% GPU at 16k. Same
+runner, prompts, flags and 900 s cap as the Ornith test; model preloaded, no other
+Ollama load.
+
+| model | task a pass | task b pass | requests per pass | seconds per pass |
+|---|---|---|---|---|
+| spark-x2.5-4b-16k | 3/3 | 3/3 | a 4 / b 6-9 | a 12-51, b 69-190 |
+
+- All six fixes are the expected ones: strip "," before `float()`; average the
+  two middle values for even-length lists. Tests untouched (checked by `cmp`).
+- n = 3 per cell on two easy tasks: 6/6 vs Ornith 5/6 and the 4B 3/6 is a
+  direction, not a significant gap. The 4B's 3/6 came from the contaminated
+  2026-10-04 runs; its clean reruns passed both tasks in 177-181 s.
+
