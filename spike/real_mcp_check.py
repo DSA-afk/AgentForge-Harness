@@ -19,10 +19,10 @@ import tempfile
 import time
 from pathlib import Path
 
-from mwm_harness.config import ModelSpec, Settings
-from mwm_harness.loop import Session
-from mwm_harness.mcp_client import McpManager, default_mcp_files, load_server_configs
-from mwm_harness.providers import ScriptedProvider, chunks_for
+from agentforge_harness.config import ModelSpec, Settings
+from agentforge_harness.loop import Session
+from agentforge_harness.mcp_client import McpManager, default_mcp_files, load_server_configs
+from agentforge_harness.providers import ScriptedProvider, chunks_for
 
 MODEL = ModelSpec(id="scripted", base_url="http://unused.invalid/v1", key_env="UNUSED")
 LONGEST_TOOL_NAME = 64  # the OpenAI wire format allows no more

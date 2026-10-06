@@ -13,8 +13,8 @@ Usage:
     .venv/bin/python spike/spike_toolcalls.py
     .venv/bin/python spike/spike_toolcalls.py --models qwen3.8-max glm-5.2
 
-The API key is read from the MWM_HARNESS_API_KEY environment variable, or from
-~/.config/mwm-harness/secrets.env (a line MWM_HARNESS_API_KEY=...).
+The API key is read from the AGENTFORGE_HARNESS_API_KEY environment variable, or from
+~/.config/agentforge-harness/secrets.env (a line AGENTFORGE_HARNESS_API_KEY=...).
 """
 
 from __future__ import annotations
@@ -30,11 +30,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import httpx
-from mwm_harness.streaming import AssembledTurn, StreamAssembler, parse_sse_line
+from agentforge_harness.streaming import AssembledTurn, StreamAssembler, parse_sse_line
 
 REPO = Path(__file__).resolve().parent.parent
-SECRETS = Path.home() / ".config" / "mwm-harness" / "secrets.env"
-KEY_ENV = "MWM_HARNESS_API_KEY"
+SECRETS = Path.home() / ".config" / "agentforge-harness" / "secrets.env"
+KEY_ENV = "AGENTFORGE_HARNESS_API_KEY"
 
 TOOLS = [
     {

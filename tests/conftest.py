@@ -8,10 +8,10 @@ from pathlib import Path
 from typing import Any
 
 import pytest
-from mwm_harness import events as ev
-from mwm_harness.config import ModelSpec, Settings
-from mwm_harness.loop import Session
-from mwm_harness.providers import ScriptedProvider
+from agentforge_harness import events as ev
+from agentforge_harness.config import ModelSpec, Settings
+from agentforge_harness.loop import Session
+from agentforge_harness.providers import ScriptedProvider
 
 MODEL = ModelSpec(id="test-model", base_url="http://unused.invalid/v1", key_env="UNUSED_KEY")
 
@@ -109,5 +109,5 @@ def make_session(tmp_path: Path):
 @pytest.fixture(autouse=True)
 def isolated_config(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Tests never read the real config directory or the real workspace."""
-    monkeypatch.setenv("MWM_HARNESS_CONFIG", str(tmp_path / "config"))
-    monkeypatch.setenv("MWM_WORKSPACE", str(tmp_path / "workspace"))
+    monkeypatch.setenv("AGENTFORGE_HARNESS_CONFIG", str(tmp_path / "config"))
+    monkeypatch.setenv("AGENTFORGE_WORKSPACE", str(tmp_path / "workspace"))

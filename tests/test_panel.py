@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import pytest
-from mwm_harness.providers import chunks_for
-from mwm_harness.web.server import create_app
+from agentforge_harness.providers import chunks_for
+from agentforge_harness.web.server import create_app
 from starlette.testclient import TestClient
 from starlette.websockets import WebSocketDisconnect
 
@@ -33,7 +33,7 @@ def test_the_page_is_served_and_foreign_hosts_are_refused(make_session):
     session, _, _ = make_session([])
     with client_for(session) as client:
         page = client.get("/")
-        assert page.status_code == 200 and "MWM Harness" in page.text
+        assert page.status_code == 200 and "AgentForge Harness" in page.text
         assert "frame-ancestors 'none'" in page.headers["content-security-policy"]
         assert TOKEN not in page.text
         assert client.get("/", headers={"Host": "evil.example"}).status_code == 421
@@ -144,8 +144,8 @@ def test_slash_commands_answer_into_the_page(make_session):
 
 
 def test_state_lists_mcp_servers_for_the_rail(make_session):
-    from mwm_harness.mcp_client import McpManager, ServerConfig
-    from mwm_harness.web.server import mcp_servers
+    from agentforge_harness.mcp_client import McpManager, ServerConfig
+    from agentforge_harness.web.server import mcp_servers
 
     manager = McpManager({"brain": ServerConfig("brain", "http", url="http://127.0.0.1:1/mcp")})
     manager.listings["brain"] = [{"name": "search"}, {"name": "ingest"}]

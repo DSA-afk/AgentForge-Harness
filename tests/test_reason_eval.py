@@ -7,8 +7,8 @@ import json
 from pathlib import Path
 
 import pytest
-from mwm_harness.agents import agent_roots, load_agents
-from mwm_harness.reason_eval import (
+from agentforge_harness.agents import agent_roots, load_agents
+from agentforge_harness.reason_eval import (
     AREAS,
     REPO_CASES,
     Case,
@@ -27,7 +27,7 @@ from mwm_harness.reason_eval import (
     summarise,
     wilson,
 )
-from mwm_harness.skills import load_skills, skill_roots
+from agentforge_harness.skills import load_skills, skill_roots
 
 PLAYBOOK_NAMES = {"reason-audit", "reason-challenge", "reason-debug", "reason-predelivery"}
 
@@ -182,7 +182,7 @@ def test_cli_compare_and_bad_input(tmp_path: Path, capsys):
 
 
 def test_a_model_caller_caps_the_answer_length_and_zero_lifts_the_cap():
-    from mwm_harness.config import ModelSpec
+    from agentforge_harness.config import ModelSpec
 
     sent: list[dict] = []
 

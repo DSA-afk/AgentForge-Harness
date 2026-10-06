@@ -1,42 +1,42 @@
 # AgentForge Harness
 
-基于 [mwm-harness](https://github.com/Matswm86/mwm-harness) 扩展的 Python Agent Harness 项目，用于代码仓库分析和多步骤工具任务，提供终端与 FastAPI Web 入口。
+采用 Harness 架构的 Python Agent 工程项目，面向代码仓库分析和多步骤任务，提供终端与 Web 两种交互方式。
 
-## 核心能力
+## 功能
 
-- **上下文管理**：大工具结果落盘、按需回读，达到 Token 预算后压缩历史。
-- **子任务隔离**：子 Agent 使用独立上下文和工具范围，仅向主任务返回最终结果。
-- **会话恢复**：JSONL 日志、压缩摘要恢复、中断工具调用结果修补。
-- **执行安全**：工具权限、人工确认、生命周期 Hook，以及 Linux bubblewrap 文件系统隔离。
-- **工具接入**：文件、Shell、MCP、Skill 和 OpenAI 兼容模型接口。
+- 上下文管理：大工具结果落盘回读、Token 预算监控与历史摘要压缩。
+- 子任务执行：独立上下文、工具范围限制与结果回传。
+- 会话恢复：JSONL 日志持久化、压缩摘要恢复与中断状态处理。
+- 安全控制：工具权限、人工确认、生命周期 Hook 与 Linux 文件系统隔离。
+- 工具扩展：文件操作、Shell、MCP、Skill 与 OpenAI 兼容模型接口。
 
-## 运行
+## 快速开始
 
-Python 3.12+。完整 Shell、Hook 与隔离功能建议在 Linux / WSL 中运行。
+需要 Python 3.12+，完整 Shell / Hook 功能建议在 Linux 或 WSL 中使用。
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -e ".[dev]"
+python -m pip install -e ".[web]"
 ```
 
-在 `models.toml` 配置模型的 `base_url`、`key_env` 和上下文预算，并通过环境变量设置对应 API Key。命令和 Python 包名暂时沿用上游，方便兼容已有配置。
+在 `models.toml` 中配置模型地址、模型 ID 和 `key_env`，再设置该字段对应的 API Key 环境变量。
 
 ```bash
-mwm --model <模型ID>
-mwm --model <模型ID> --web
-mwm --model <模型ID> --resume last
+agentforge --model <模型ID>
+agentforge --model <模型ID> --web
+agentforge --model <模型ID> --resume last
+```
+
+默认配置目录为 `~/.config/agentforge-harness`，可通过 `AGENTFORGE_HARNESS_CONFIG` 指定其他目录。
+
+## 开发
+
+```bash
+python -m pip install -e ".[dev]"
 python -m pytest -q
 ```
 
-## 本地改动
+核心代码位于 `agentforge_harness/`，测试位于 `tests/`。
 
-- 恢复时跳过非对象 JSON 记录和错误消息结构，避免异常记录阻断后续有效历史。
-- 缺失工具结果标记为“执行结果未知”，提示核对副作用后再重试。
-- 逐行读取会话日志，避免一次性读入并拆分整份日志。
-
-当前恢复能力不包含持久化检查点和幂等执行；子任务不包含 Fork 上下文模式；bubblewrap 配置未提供网络隔离。验证记录见 [MIGRATION.md](MIGRATION.md)。
-
-## 来源
-
-基于 MWM AI 的 MIT 开源项目，保留原始 [LICENSE](LICENSE)。上游版本及本地修改范围见 [UPSTREAM.md](UPSTREAM.md)。
+许可证与第三方声明：[LICENSE](LICENSE) · [NOTICE](NOTICE)。

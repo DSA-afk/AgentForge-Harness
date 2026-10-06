@@ -1,0 +1,13 @@
+Third-party software notice
+
+AgentForge Harness includes code from MWM Harness:
+https://github.com/Matswm86/mwm-harness
+Imported revision: 6f70724e6b84ade0f13600d5ab058153a7e34418
+
+Copyright (c) 2026 MWM AI
+Licensed under the MIT License. The original copyright and permission notice
+are retained in LICENSE and apply to the included upstream software.
+
+Local modifications include project branding, transcript recovery validation,
+unknown-outcome reporting for interrupted tools, incremental transcript reads,
+and documentation changes.

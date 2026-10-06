@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import pytest
-from mwm_harness import events as ev
-from mwm_harness.preview import OutsideProject, inside, list_dir, preview_change, read_file
-from mwm_harness.providers import chunks_for
-from mwm_harness.repl.terminal import Printer, run_command
+from agentforge_harness import events as ev
+from agentforge_harness.preview import OutsideProject, inside, list_dir, preview_change, read_file
+from agentforge_harness.providers import chunks_for
+from agentforge_harness.repl.terminal import Printer, run_command
 from test_panel import HOST, TOKEN, client_for, until
 
 ORIGINAL = "first line\r\nsecond line ø\r\nlast line without newline".encode()

@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from mwm_harness.transcript import load_messages
+from agentforge_harness.transcript import load_messages
 
 
 class TranscriptRecoveryTests(unittest.TestCase):

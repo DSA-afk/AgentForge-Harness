@@ -1,7 +1,7 @@
 import json
 
 import pytest
-from mwm_harness.streaming import StreamAssembler, parse_sse_line
+from agentforge_harness.streaming import StreamAssembler, parse_sse_line
 
 
 def _chunk(delta=None, finish_reason=None):
@@ -133,8 +133,8 @@ def test_parse_sse_line_reads_a_data_line():
 
 
 def test_terminal_prints_thinking_dimmed_and_hides_it_after_think_off(capsys):
-    from mwm_harness import events as ev
-    from mwm_harness.repl.terminal import Printer, run_command
+    from agentforge_harness import events as ev
+    from agentforge_harness.repl.terminal import Printer, run_command
 
     out = Printer(color=False)
     out(ev.ReasoningDelta("step one"))

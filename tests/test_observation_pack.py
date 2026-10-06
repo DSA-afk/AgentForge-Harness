@@ -5,9 +5,9 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 
-from mwm_harness.messages import Message, text_block, tool_result_block, tool_use_block
-from mwm_harness.observation_pack import pack_observations
-from mwm_harness.providers import chunks_for
+from agentforge_harness.messages import Message, text_block, tool_result_block, tool_use_block
+from agentforge_harness.observation_pack import pack_observations
+from agentforge_harness.providers import chunks_for
 
 BIG = "".join(f"line {i:05d} " + "x" * 60 + "\n" for i in range(400))  # about 28 KB
 

@@ -1,7 +1,7 @@
 """The agent must not introduce itself as Claude's helper: the rule files it inherits say Claude."""
 
-from mwm_harness.config import ModelSpec
-from mwm_harness.context import build_system_prompt
+from agentforge_harness.config import ModelSpec
+from agentforge_harness.context import build_system_prompt
 
 
 def test_the_prompt_names_the_agent_and_reframes_inherited_claude_wording(tmp_path):

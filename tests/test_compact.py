@@ -6,10 +6,10 @@ import asyncio
 import json
 
 from conftest import write_hook
-from mwm_harness import events as ev
-from mwm_harness.providers import chunks_for
-from mwm_harness.repl.terminal import Printer, run_async_command, run_command
-from mwm_harness.transcript import load_messages
+from agentforge_harness import events as ev
+from agentforge_harness.providers import chunks_for
+from agentforge_harness.repl.terminal import Printer, run_async_command, run_command
+from agentforge_harness.transcript import load_messages
 
 BIG = {"prompt_tokens": 120_000, "completion_tokens": 500}  # over the 100k soft budget
 

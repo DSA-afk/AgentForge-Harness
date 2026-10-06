@@ -8,9 +8,9 @@ import json
 import time
 
 from conftest import FixedApprover, write_hook
-from mwm_harness import events as ev
-from mwm_harness.providers import chunks_for
-from mwm_harness.transcript import load_messages
+from agentforge_harness import events as ev
+from agentforge_harness.providers import chunks_for
+from agentforge_harness.transcript import load_messages
 
 
 def run(coro):
@@ -458,7 +458,7 @@ def test_reasoning_streams_live_under_both_provider_field_names(make_session):
 
 
 def _mcp_tool(name: str, description: str):
-    from mwm_harness.tools import Tool, ToolResult
+    from agentforge_harness.tools import Tool, ToolResult
 
     class Fake(Tool):
         read_only = True

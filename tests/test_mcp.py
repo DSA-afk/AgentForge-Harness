@@ -10,7 +10,7 @@ from pathlib import Path
 
 import httpx
 import pytest
-from mwm_harness.mcp_client import (
+from agentforge_harness.mcp_client import (
     McpError,
     McpManager,
     McpServer,
@@ -18,8 +18,8 @@ from mwm_harness.mcp_client import (
     load_server_configs,
     render_result,
 )
-from mwm_harness.sandbox import Sandbox
-from mwm_harness.tools.base import ToolContext
+from agentforge_harness.sandbox import Sandbox
+from agentforge_harness.tools.base import ToolContext
 
 FAKE = Path(__file__).parent / "fake_mcp_server.py"
 
@@ -219,7 +219,7 @@ def test_render_result_saves_images_and_falls_back_to_structured(tmp_path):
 
 def test_session_runs_an_mcp_tool_behind_the_permission_rules(make_session, tmp_path):
     from conftest import FixedApprover
-    from mwm_harness.providers import chunks_for
+    from agentforge_harness.providers import chunks_for
 
     approver = FixedApprover(False)
     turns = [

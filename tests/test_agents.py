@@ -6,10 +6,10 @@ import asyncio
 import time
 
 from conftest import MODEL, FixedApprover
-from mwm_harness import events as ev
-from mwm_harness.agents import Agent, TaskTool, load_agents, resolve_model
-from mwm_harness.config import ModelSpec
-from mwm_harness.providers import chunks_for
+from agentforge_harness import events as ev
+from agentforge_harness.agents import Agent, TaskTool, load_agents, resolve_model
+from agentforge_harness.config import ModelSpec
+from agentforge_harness.providers import chunks_for
 
 AGENT_FILE = """---
 name: reviewer
@@ -134,8 +134,8 @@ def test_unknown_agent_is_a_tool_error(make_session):
 
 
 def test_headless_agent_run_prints_the_report(tmp_path, monkeypatch, capsys):
-    from mwm_harness import cli
-    from mwm_harness.providers import ScriptedProvider
+    from agentforge_harness import cli
+    from agentforge_harness.providers import ScriptedProvider
 
     project = tmp_path / "project"
     (project / ".claude" / "agents").mkdir(parents=True)
@@ -148,7 +148,7 @@ def test_headless_agent_run_prints_the_report(tmp_path, monkeypatch, capsys):
     ]
     provider = ScriptedProvider(turns)
     monkeypatch.setattr(cli, "OpenAICompatProvider", lambda secrets: provider)
-    monkeypatch.setenv("MWM_HARNESS_API_KEY", "sk-test")
+    monkeypatch.setenv("AGENTFORGE_HARNESS_API_KEY", "sk-test")
     monkeypatch.setenv("HOME", str(tmp_path / "home"))
     argv = ["-p", "check this draft", "--agent", "checker", "--allow", "WebFetch"]
     argv += ["--cwd", str(project), "--no-hooks", "--no-mcp"]

@@ -14,11 +14,11 @@ from collections import Counter
 from fnmatch import fnmatchcase
 from pathlib import Path
 
-from mwm_harness.agents import agent_roots, load_agents
-from mwm_harness.config import load_settings
-from mwm_harness.mcp_client import McpManager, default_mcp_files, load_server_configs
-from mwm_harness.skills import command_roots, load_commands, load_skills, skill_roots
-from mwm_harness.tools import default_tools
+from agentforge_harness.agents import agent_roots, load_agents
+from agentforge_harness.config import load_settings
+from agentforge_harness.mcp_client import McpManager, default_mcp_files, load_server_configs
+from agentforge_harness.skills import command_roots, load_commands, load_skills, skill_roots
+from agentforge_harness.tools import default_tools
 
 
 async def main() -> int:

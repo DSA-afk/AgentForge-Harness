@@ -24,10 +24,10 @@ import tempfile
 import time
 from pathlib import Path
 
-from mwm_harness import events as ev
-from mwm_harness.config import ModelSpec, Settings
-from mwm_harness.loop import Session, default_hook_settings
-from mwm_harness.providers import ScriptedProvider, chunks_for
+from agentforge_harness import events as ev
+from agentforge_harness.config import ModelSpec, Settings
+from agentforge_harness.loop import Session, default_hook_settings
+from agentforge_harness.providers import ScriptedProvider, chunks_for
 
 EM_DASH = "—"
 FIRST = f"The file holds three lines {EM_DASH} nothing else is in it."
@@ -43,7 +43,7 @@ async def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--cwd", type=Path)
     args = parser.parse_args()
-    cwd = args.cwd or Path(tempfile.mkdtemp(prefix="mwm-harness-hooks-"))
+    cwd = args.cwd or Path(tempfile.mkdtemp(prefix="agentforge-harness-hooks-"))
     (cwd / "three.txt").write_text("a\nb\nc\n")
 
     provider = ScriptedProvider(

@@ -3,30 +3,30 @@ requires = ["setuptools>=77.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mwm-harness"
+name = "agentforge-harness"
 version = "0.1.0"
-description = "MWM Harness: a personal agent harness for Qwen, Kimi and GLM models"
+description = "AgentForge Harness for repository analysis and long-running agent tasks"
 requires-python = ">=3.12"
 license = "MIT"
-license-files = ["LICENSE"]
+license-files = ["LICENSE", "NOTICE"]
 dependencies = [
     "httpx>=0.27",
 ]
 
 [project.scripts]
-mwm = "mwm_harness.cli:main"
-mwm-jev = "mwm_harness.jev:main"
-mwm-eval = "mwm_harness.reason_eval:main"
+agentforge = "agentforge_harness.cli:main"
+agentforge-jev = "agentforge_harness.jev:main"
+agentforge-eval = "agentforge_harness.reason_eval:main"
 
 [project.optional-dependencies]
 web = ["fastapi>=0.110", "uvicorn>=0.29", "websockets>=12"]
 dev = ["pytest>=8.0", "ruff>=0.15", "fastapi>=0.110", "uvicorn>=0.29", "websockets>=12"]
 
 [tool.setuptools.packages.find]
-include = ["mwm_harness*"]
+include = ["agentforge_harness*"]
 
 [tool.setuptools.package-data]
-mwm_harness = ["web/static/*", "playbooks/*/SKILL.md", "builtin_agents/*.md"]
+agentforge_harness = ["web/static/*", "playbooks/*/SKILL.md", "builtin_agents/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

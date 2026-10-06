@@ -7,10 +7,10 @@ import json
 
 import httpx
 import pytest
-from mwm_harness import jev
-from mwm_harness.jev import DecisionLog, JevClient, JevError, check_questions, report
-from mwm_harness.providers import chunks_for
-from mwm_harness.tools.judge import Judge
+from agentforge_harness import jev
+from agentforge_harness.jev import DecisionLog, JevClient, JevError, check_questions, report
+from agentforge_harness.providers import chunks_for
+from agentforge_harness.tools.judge import Judge
 
 QUESTIONS = {
     "is_setup": {"type": "noul", "instructions": "Is a liquidity sweep described?"},

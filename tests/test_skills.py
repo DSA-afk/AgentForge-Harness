@@ -5,16 +5,16 @@ from __future__ import annotations
 import asyncio
 from pathlib import Path
 
-from mwm_harness.repl.terminal import Printer, run_command
-from mwm_harness.sandbox import Sandbox
-from mwm_harness.skills import (
+from agentforge_harness.repl.terminal import Printer, run_command
+from agentforge_harness.sandbox import Sandbox
+from agentforge_harness.skills import (
     SkillTool,
     load_commands,
     load_skills,
     skills_prompt,
     split_frontmatter,
 )
-from mwm_harness.tools.base import ToolContext
+from agentforge_harness.tools.base import ToolContext
 
 
 def run(coro):

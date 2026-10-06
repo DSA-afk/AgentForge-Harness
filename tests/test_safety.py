@@ -6,9 +6,9 @@ import asyncio
 from pathlib import Path
 
 import pytest
-from mwm_harness.permissions import Permissions
-from mwm_harness.sandbox import Sandbox, bwrap_works
-from mwm_harness.tools import ToolContext, default_tools
+from agentforge_harness.permissions import Permissions
+from agentforge_harness.sandbox import Sandbox, bwrap_works
+from agentforge_harness.tools import ToolContext, default_tools
 
 DENIED_COMMANDS = [
     "git push --force origin main",
@@ -62,8 +62,8 @@ def test_deny_list_leaves_normal_commands_alone(permissions: Permissions, comman
 def test_deny_list_covers_paths_and_tool_names(permissions: Permissions) -> None:
     inbox = {"file_path": "/data/notes/inbox/new.md", "content": "x"}
     assert permissions.decide("Write", inbox, False).verdict == "deny"
-    assert permissions.decide("mcp__mwm-vector-brain__delete_source", {}, False).verdict == "deny"
-    assert permissions.decide("mcp__mwm-vector-brain__search_books", {}, False).verdict == "allow"
+    assert permissions.decide("mcp__agentforge-vector-brain__delete_source", {}, False).verdict == "deny"
+    assert permissions.decide("mcp__agentforge-vector-brain__search_books", {}, False).verdict == "allow"
 
 
 def test_modes(tmp_path: Path) -> None:

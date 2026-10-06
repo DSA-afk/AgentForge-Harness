@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-from mwm_harness.providers import chunks_for
-from mwm_harness.web.server import create_app
+from agentforge_harness.providers import chunks_for
+from agentforge_harness.web.server import create_app
 from starlette.testclient import TestClient
 
 PORT = 8765

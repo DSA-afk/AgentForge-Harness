@@ -6,9 +6,9 @@ import asyncio
 from pathlib import Path
 
 import httpx
-from mwm_harness.sandbox import Sandbox
-from mwm_harness.tools.base import ToolContext
-from mwm_harness.tools.web import WebFetch, WebSearch, html_to_text, real_url
+from agentforge_harness.sandbox import Sandbox
+from agentforge_harness.tools.base import ToolContext
+from agentforge_harness.tools.web import WebFetch, WebSearch, html_to_text, real_url
 
 PUBLIC = "http://93.184.216.34"
 

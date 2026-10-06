@@ -16,10 +16,10 @@ import tempfile
 from pathlib import Path
 
 import uvicorn
-from mwm_harness.config import ModelSpec, Settings
-from mwm_harness.loop import Session
-from mwm_harness.providers import ScriptedProvider, chunks_for
-from mwm_harness.web.server import create_app
+from agentforge_harness.config import ModelSpec, Settings
+from agentforge_harness.loop import Session
+from agentforge_harness.providers import ScriptedProvider, chunks_for
+from agentforge_harness.web.server import create_app
 
 MODELS = {
     name: ModelSpec(id=name, base_url="http://unused.invalid/v1", key_env="UNUSED")
