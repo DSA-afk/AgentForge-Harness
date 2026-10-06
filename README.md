@@ -39,4 +39,4 @@ python -m pytest -q
 
 核心代码位于 `agentforge_harness/`，测试位于 `tests/`。
 
-许可证与第三方声明：[LICENSE](LICENSE) · [NOTICE](NOTICE)。
+许可证与第三方声明：[LICENSE](LICENSE) 。
